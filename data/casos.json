@@ -1,0 +1,301 @@
+{
+  "niveles": [
+    {
+      "id": 1,
+      "nombre": "Recepción Básica",
+      "descripcion": "Identifica el documento requerido en situaciones cotidianas directas.",
+      "mecanica": "5 elecciones",
+      "casos": [
+        {
+          "id": "N1-C1",
+          "tipo": "eleccion",
+          "ciudadano": "Solicitante en ventanilla",
+          "solicitud": "Voy a contratar servicio de internet en casa y me piden comprobar mi domicilio actual.",
+          "respuesta_correcta": "cfe",
+          "explicacion": "El recibo de CFE funciona como comprobante de domicilio oficial."
+        },
+        {
+          "id": "N1-C2",
+          "tipo": "eleccion",
+          "ciudadano": "Trabajador de nuevo ingreso",
+          "solicitud": "Empiezo mi primer empleo formal el lunes y Recursos Humanos me pide mi número para darme de alta en el IMSS.",
+          "respuesta_correcta": "nss",
+          "explicacion": "El NSS es indispensable para el alta en seguridad social, empleo formal y servicios médicos."
+        },
+        {
+          "id": "N1-C3",
+          "tipo": "eleccion",
+          "ciudadano": "Madre de familia",
+          "solicitud": "Necesito inscribir a mi hijo en la escuela primaria y me piden el documento que acredita oficialmente su nacimiento, edad y filiación.",
+          "respuesta_correcta": "acta",
+          "explicacion": "El acta de nacimiento acredita oficialmente el nombre completo, la edad y la filiación."
+        },
+        {
+          "id": "N1-C4",
+          "tipo": "eleccion",
+          "ciudadano": "Usuario de portal digital",
+          "solicitud": "Voy a crear una cuenta en el portal de citas en línea y necesito recibir avisos y enlaces de confirmación.",
+          "respuesta_correcta": "correo",
+          "explicacion": "El correo electrónico es el medio de contacto para notificaciones y recuperación de cuentas digitales."
+        },
+        {
+          "id": "N1-C5",
+          "tipo": "eleccion",
+          "ciudadano": "Estudiante universitario",
+          "solicitud": "Solicito una beca federal y el formulario me pide mi clave única de registro poblacional en México.",
+          "respuesta_correcta": "curp",
+          "explicacion": "La CURP es la clave única alfanumérica de 18 caracteres de identidad poblacional en México."
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "nombre": "Archivo en Orden",
+      "descripcion": "Distingue entre documentos oficiales que suelen confundirse en ventanilla.",
+      "mecanica": "5 elecciones",
+      "casos": [
+        {
+          "id": "N2-C1",
+          "tipo": "eleccion",
+          "ciudadano": "Ciudadana en trámite familiar",
+          "solicitud": "Me piden acreditar oficialmente el nombre de mis padres y mi lugar de nacimiento; ya traje mi CURP pero me indican que no basta.",
+          "respuesta_correcta": "acta",
+          "explicacion": "A diferencia de la CURP, el acta de nacimiento acredita la filiación y los datos completos del registro civil."
+        },
+        {
+          "id": "N2-C2",
+          "tipo": "eleccion",
+          "ciudadano": "Asegurado",
+          "solicitud": "Quiero revisar mis semanas cotizadas y consultar si ya alcanzo puntos para un crédito de vivienda en Infonavit.",
+          "respuesta_correcta": "nss",
+          "explicacion": "El NSS vincula el historial laboral, los servicios de seguridad social y las aportaciones al Infonavit."
+        },
+        {
+          "id": "N2-C3",
+          "tipo": "eleccion",
+          "ciudadano": "Solicitante de pasaporte",
+          "solicitud": "Ya entregué mi acta, pero el sistema requiere mi clave personal de 18 caracteres alfanuméricos para validar mi registro poblacional.",
+          "respuesta_correcta": "curp",
+          "explicacion": "La CURP identifica de manera única a cada residente mediante 18 caracteres alfanuméricos."
+        },
+        {
+          "id": "N2-C4",
+          "tipo": "eleccion",
+          "ciudadano": "Cliente bancario",
+          "solicitud": "Al abrir mi cuenta de ahorro ya proporcioné mi dirección de contacto digital, pero ahora me piden acreditar físicamente dónde vivo.",
+          "respuesta_correcta": "cfe",
+          "explicacion": "El recibo de CFE comprueba el domicilio físico actual, mientras que el correo solo sirve como contacto digital."
+        },
+        {
+          "id": "N2-C5",
+          "tipo": "eleccion",
+          "ciudadano": "Contribuyente",
+          "solicitud": "Olvidé la contraseña de mi expediente electrónico y el sistema necesita enviar un enlace seguro para recuperar mi acceso.",
+          "respuesta_correcta": "correo",
+          "explicacion": "El correo electrónico es el canal oficial para recuperación de cuentas y notificaciones digitales."
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "nombre": "Ojo de Águila",
+      "descripcion": "Inspecciona documentos y detecta errores evidentes antes de aprobar.",
+      "mecanica": "5 inspecciones",
+      "casos": [
+        {
+          "id": "N3-C1",
+          "tipo": "inspector",
+          "documento": "nss",
+          "contexto": "Alta de trabajador en empresa formal.",
+          "campos": {
+            "titular": "Carlos Mendoza Ruiz",
+            "folio": "4598A201934",
+            "emision": "Vigente"
+          },
+          "es_valido": false,
+          "explicacion": "El NSS debe contener exactamente 11 dígitos numéricos, sin letras ni espacios."
+        },
+        {
+          "id": "N3-C2",
+          "tipo": "inspector",
+          "documento": "correo",
+          "contexto": "Registro de medio de contacto para notificaciones oficiales.",
+          "campos": {
+            "titular": "Laura Jiménez Soto",
+            "direccion": "laura.jimenez.gmail.com",
+            "uso": "Avisos y recuperación de cuenta"
+          },
+          "es_valido": false,
+          "explicacion": "Un correo electrónico válido debe incluir el símbolo @ y un dominio con extensión."
+        },
+        {
+          "id": "N3-C3",
+          "tipo": "inspector",
+          "documento": "curp",
+          "contexto": "Validación de identidad poblacional para trámite de beca.",
+          "campos": {
+            "titular": "Sofía Ramírez López",
+            "fecha_nacimiento": "14/05/1998",
+            "clave": "RALS980514MDFMPF09"
+          },
+          "es_valido": true,
+          "explicacion": "La CURP tiene exactamente 18 caracteres alfanuméricos y su fecha incrustada (980514) coincide con el nacimiento."
+        },
+        {
+          "id": "N3-C4",
+          "tipo": "inspector",
+          "documento": "cfe",
+          "contexto": "Comprobante de domicilio para apertura de cuenta bancaria (fecha actual: noviembre 2026).",
+          "campos": {
+            "titular": "Jorge Herrera Vega",
+            "domicilio": "Av. Reforma 412, Col. Centro",
+            "fecha_emision": "12/03/2023"
+          },
+          "es_valido": false,
+          "explicacion": "El recibo de CFE supera ampliamente la antigüedad máxima permitida de 3 meses."
+        },
+        {
+          "id": "N3-C5",
+          "tipo": "inspector",
+          "documento": "acta",
+          "contexto": "Acreditación de identidad y filiación para inscripción universitaria.",
+          "campos": {
+            "titular_tramite": "Elena Morales Cruz",
+            "nombre_en_acta": "Elena Morales Cruz",
+            "fecha_nacimiento": "22/08/2001",
+            "entidad_registro": "Jalisco"
+          },
+          "es_valido": true,
+          "explicacion": "El nombre del titular coincide exactamente con el acta y las fechas registradas son lógicas."
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "nombre": "Ventanilla Mixta",
+      "descripcion": "Combina recepción de solicitudes con revisión de errores intermedios.",
+      "mecanica": "2 elecciones + 3 inspecciones",
+      "casos": [
+        {
+          "id": "N4-C1",
+          "tipo": "eleccion",
+          "ciudadano": "Solicitante en módulo estatal",
+          "solicitud": "Me piden una clave única de registro poblacional de 18 caracteres para vincular mi expediente clínico, sin necesidad de acreditar parentesco.",
+          "respuesta_correcta": "curp",
+          "explicacion": "La CURP es la clave única de registro poblacional de 18 caracteres empleada para vincular expedientes."
+        },
+        {
+          "id": "N4-C2",
+          "tipo": "eleccion",
+          "ciudadano": "Arrendataria",
+          "solicitud": "Para firmar un contrato de telefonía fija me exigen un recibo de servicio eléctrico emitido hace menos de 3 meses.",
+          "respuesta_correcta": "cfe",
+          "explicacion": "El recibo de CFE con antigüedad máxima de 3 meses acredita el domicilio actual."
+        },
+        {
+          "id": "N4-C3",
+          "tipo": "inspector",
+          "documento": "curp",
+          "contexto": "Verificación de clave para trámite de licencia estatal.",
+          "campos": {
+            "titular": "Miguel Ángel Torres Díaz",
+            "fecha_nacimiento": "03/11/1995",
+            "clave": "TODM951103HJCGR04"
+          },
+          "es_valido": false,
+          "explicacion": "La CURP presentada tiene 17 caracteres; debe constar exactamente de 18 caracteres alfanuméricos."
+        },
+        {
+          "id": "N4-C4",
+          "tipo": "inspector",
+          "documento": "cfe",
+          "contexto": "Ingreso a edificio oficial con control de identidad personal.",
+          "campos": {
+            "titular": "Patricia Navarro Gil",
+            "uso_solicitado": "Identificación oficial con fotografía",
+            "fecha_emision": "15/10/2026"
+          },
+          "es_valido": false,
+          "explicacion": "El recibo de CFE solo es válido como comprobante de domicilio, nunca como identificación oficial con fotografía."
+        },
+        {
+          "id": "N4-C5",
+          "tipo": "inspector",
+          "documento": "acta",
+          "contexto": "Validación de acta de nacimiento para expedición de pasaporte.",
+          "campos": {
+            "titular_tramite": "Roberto Castillo Luna",
+            "nombre_en_acta": "Rodolfo Castillo Luna",
+            "fecha_nacimiento": "09/04/1992",
+            "folio_registro": "004821"
+          },
+          "es_valido": false,
+          "explicacion": "El nombre registrado en el acta (Rodolfo) no coincide con el titular del trámite (Roberto)."
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "nombre": "Hora Pico",
+      "descripcion": "Atiende trámites complejos y detecta inconsistencias finas bajo presión.",
+      "mecanica": "2 elecciones + 3 inspecciones",
+      "casos": [
+        {
+          "id": "N5-C1",
+          "tipo": "eleccion",
+          "ciudadano": "Empleado en trámite de vivienda",
+          "solicitud": "Necesito confirmar el número de 11 dígitos que asigna la seguridad social para vincular mi crédito de Infonavit y mi clínica familiar.",
+          "respuesta_correcta": "nss",
+          "explicacion": "El NSS de 11 dígitos numéricos gestiona la seguridad social, clínica familiar y crédito Infonavit."
+        },
+        {
+          "id": "N5-C2",
+          "tipo": "eleccion",
+          "ciudadano": "Solicitante en registro civil",
+          "solicitud": "Debo comprobar mi fecha de nacimiento exacta y la filiación de mis padres para corregir una discrepancia en mis documentos escolares.",
+          "respuesta_correcta": "acta",
+          "explicacion": "El acta de nacimiento es el documento base que acredita fecha de nacimiento, nombre completo y filiación."
+        },
+        {
+          "id": "N5-C3",
+          "tipo": "inspector",
+          "documento": "curp",
+          "contexto": "Cotejo documental de alta precisión para expediente federal.",
+          "campos": {
+            "titular": "Andrea Vargas Paredes",
+            "fecha_nacimiento": "19/07/1999",
+            "clave": "VAPA990819MNLRSN02"
+          },
+          "es_valido": false,
+          "explicacion": "La fecha incrustada en la CURP (990819, agosto) no coincide con la fecha de nacimiento del titular (19/07/1999)."
+        },
+        {
+          "id": "N5-C4",
+          "tipo": "inspector",
+          "documento": "correo",
+          "contexto": "Envío automático de constancia digital oficial.",
+          "campos": {
+            "titular": "Diego Fuentes Ortega",
+            "direccion": "diego.fuentes @correo.mx",
+            "uso": "Recepción de constancia en PDF"
+          },
+          "es_valido": false,
+          "explicacion": "La dirección de correo contiene un espacio en blanco antes de la @, lo que invalida el envío."
+        },
+        {
+          "id": "N5-C5",
+          "tipo": "inspector",
+          "documento": "cfe",
+          "contexto": "Comprobante de domicilio vigente al 24/11/2026 (antigüedad máxima permitida: 3 meses).",
+          "campos": {
+            "titular": "Valeria Soto Méndez",
+            "domicilio": "Calle Hidalgo 88, Col. Juárez",
+            "fecha_emision": "10/06/2026"
+          },
+          "es_valido": false,
+          "explicacion": "El recibo fue emitido hace más de 5 meses; para ser válido debe tener máximo 3 meses de antigüedad."
+        }
+      ]
+    }
+  ]
+}

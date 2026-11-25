@@ -1,0 +1,51 @@
+{
+    "usuarios": [
+        {
+            "usuario": "popis0126",
+            "password": "1234",
+            "puntos_totales": 880,
+            "nivel_desbloqueado": 5,
+            "records_nivel": {
+                "1": 160,
+                "2": 200,
+                "3": 160,
+                "4": 160,
+                "5": 200
+            },
+            "niveles_perfectos": [
+                2,
+                5
+            ]
+        },
+        {
+            "usuario": "josuesito_io",
+            "password": "1234",
+            "puntos_totales": 0,
+            "nivel_desbloqueado": 1,
+            "records_nivel": {
+                "1": 0,
+                "2": 0,
+                "3": 0,
+                "4": 0,
+                "5": 0
+            },
+            "niveles_perfectos": []
+        },
+        {
+            "usuario": "josuesito_io0",
+            "password": "1234",
+            "puntos_totales": 200,
+            "nivel_desbloqueado": 2,
+            "records_nivel": {
+                "1": 200,
+                "2": 0,
+                "3": 0,
+                "4": 0,
+                "5": 0
+            },
+            "niveles_perfectos": [
+                1
+            ]
+        }
+    ]
+}
