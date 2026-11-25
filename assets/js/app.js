@@ -2,7 +2,7 @@
     'use strict';
 
     const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const POP_COLORS = ['#FF2A7A', '#1E40FF', '#FFC700', '#00B86B', '#FF5C1B', '#7C3AED', '#00C2FF'];
+    const PORTAL_COLORS = ['#15284B', '#2F5D80', '#1E7A4F', '#D9A441', '#5B8FB9'];
 
     /* 1. Animated count-up for numeric metrics */
     function initCounters() {
@@ -19,7 +19,7 @@
                 return;
             }
 
-            const duration = 740;
+            const duration = 620;
             const startTime = performance.now();
 
             function tick(now) {
@@ -37,70 +37,7 @@
         });
     }
 
-    /* 2. Energetic 3D hover tilt on cards */
-    function initTiltCards() {
-        if (prefersReduced) return;
-        const cards = document.querySelectorAll('.choice-card:not(:disabled), .level-card:not(.level-card-locked), .hero-doc-card');
-
-        cards.forEach((card) => {
-            card.addEventListener('pointermove', (e) => {
-                const rect = card.getBoundingClientRect();
-                const x = (e.clientX - rect.left) / rect.width;
-                const y = (e.clientY - rect.top) / rect.height;
-                const rotateY = (x - 0.5) * 8;
-                const rotateX = (0.5 - y) * 8;
-
-                card.style.transform = `perspective(700px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) translate(-2px, -4px)`;
-            });
-
-            card.addEventListener('pointerleave', () => {
-                card.style.transform = '';
-            });
-        });
-    }
-
-    /* 3. Maximalist click sparks + tactile ripple */
-    function spawnSparks(clientX, clientY) {
-        if (prefersReduced) return;
-        const count = 8;
-        for (let i = 0; i < count; i++) {
-            const spark = document.createElement('span');
-            spark.className = 'click-spark';
-            const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.4;
-            const dist = 26 + Math.random() * 32;
-            spark.style.left = `${clientX - 5}px`;
-            spark.style.top = `${clientY - 5}px`;
-            spark.style.backgroundColor = POP_COLORS[Math.floor(Math.random() * POP_COLORS.length)];
-            spark.style.setProperty('--dx', `${Math.cos(angle) * dist}px`);
-            spark.style.setProperty('--dy', `${Math.sin(angle) * dist}px`);
-            spark.style.setProperty('--rot', `${Math.round((Math.random() - 0.5) * 260)}deg`);
-            document.body.appendChild(spark);
-            window.setTimeout(() => spark.remove(), 540);
-        }
-    }
-
-    function initRipplesAndSparks() {
-        if (prefersReduced) return;
-        const targets = document.querySelectorAll('.btn:not(:disabled), .choice-card:not(:disabled)');
-
-        targets.forEach((el) => {
-            el.addEventListener('pointerdown', (e) => {
-                const rect = el.getBoundingClientRect();
-                const ripple = document.createElement('span');
-                ripple.className = 'ui-ripple';
-                const size = Math.max(rect.width, rect.height) * 1.4;
-                ripple.style.width = ripple.style.height = `${size}px`;
-                ripple.style.left = `${e.clientX - rect.left - size / 2}px`;
-                ripple.style.top = `${e.clientY - rect.top - size / 2}px`;
-                el.appendChild(ripple);
-                window.setTimeout(() => ripple.remove(), 550);
-
-                spawnSparks(e.clientX, e.clientY);
-            });
-        });
-    }
-
-    /* 4. Auth tabs with bouncy sliding indicator */
+    /* 2. Auth tabs with smooth sliding indicator on index.php */
     function initAuthTabs() {
         const switcher = document.querySelector('[data-auth-tabs]');
         if (!switcher) return;
@@ -137,7 +74,7 @@
         });
     }
 
-    /* 5. Multi-shape maximalist confetti explosion */
+    /* 3. Tasteful confetti burst on approved summary */
     function initConfetti() {
         if (prefersReduced) return;
         const trigger = document.querySelector('[data-confetti="true"]');
@@ -164,21 +101,21 @@
         window.addEventListener('resize', resize);
 
         const pieces = [];
-        const count = trigger.getAttribute('data-confetti-intensity') === 'high' ? 120 : 72;
+        const count = trigger.getAttribute('data-confetti-intensity') === 'high' ? 75 : 44;
 
         for (let i = 0; i < count; i++) {
-            const angle = -Math.PI / 2 + (Math.random() - 0.5) * 1.65;
-            const speed = 6 + Math.random() * 10;
+            const angle = -Math.PI / 2 + (Math.random() - 0.5) * 1.4;
+            const speed = 5 + Math.random() * 7;
             pieces.push({
-                x: window.innerWidth * (0.15 + Math.random() * 0.7),
-                y: window.innerHeight * 0.22 + (Math.random() - 0.5) * 50,
-                vx: Math.cos(angle) * speed + (Math.random() - 0.5) * 3.5,
-                vy: Math.sin(angle) * speed - Math.random() * 4,
-                size: 7 + Math.random() * 7,
-                shape: i % 3, // 0: rect, 1: circle, 2: diamond
+                x: window.innerWidth * (0.2 + Math.random() * 0.6),
+                y: window.innerHeight * 0.2 + (Math.random() - 0.5) * 30,
+                vx: Math.cos(angle) * speed + (Math.random() - 0.5) * 2.5,
+                vy: Math.sin(angle) * speed - Math.random() * 3,
+                w: 7 + Math.random() * 5,
+                h: 4 + Math.random() * 4,
                 rot: Math.random() * Math.PI * 2,
-                vrot: (Math.random() - 0.5) * 0.26,
-                color: POP_COLORS[i % POP_COLORS.length],
+                vrot: (Math.random() - 0.5) * 0.2,
+                color: PORTAL_COLORS[i % PORTAL_COLORS.length],
                 alpha: 1,
             });
         }
@@ -190,47 +127,27 @@
 
             let alive = 0;
             pieces.forEach((p) => {
-                p.vy += 0.24;
+                p.vy += 0.22;
                 p.vx *= 0.99;
                 p.x += p.vx;
                 p.y += p.vy;
                 p.rot += p.vrot;
-                if (elapsed > 1700) {
-                    p.alpha = Math.max(0, p.alpha - 0.018);
+                if (elapsed > 1400) {
+                    p.alpha = Math.max(0, p.alpha - 0.02);
                 }
-                if (p.alpha > 0 && p.y < window.innerHeight + 50) {
+                if (p.alpha > 0 && p.y < window.innerHeight + 40) {
                     alive++;
                     ctx.save();
                     ctx.globalAlpha = p.alpha;
                     ctx.translate(p.x, p.y);
                     ctx.rotate(p.rot);
                     ctx.fillStyle = p.color;
-                    ctx.strokeStyle = '#111111';
-                    ctx.lineWidth = 1.5;
-
-                    if (p.shape === 1) {
-                        ctx.beginPath();
-                        ctx.arc(0, 0, p.size / 2, 0, Math.PI * 2);
-                        ctx.fill();
-                        ctx.stroke();
-                    } else if (p.shape === 2) {
-                        ctx.beginPath();
-                        ctx.moveTo(0, -p.size / 1.5);
-                        ctx.lineTo(p.size / 1.5, 0);
-                        ctx.lineTo(0, p.size / 1.5);
-                        ctx.lineTo(-p.size / 1.5, 0);
-                        ctx.closePath();
-                        ctx.fill();
-                        ctx.stroke();
-                    } else {
-                        ctx.fillRect(-p.size / 2, -p.size / 3, p.size, p.size * 0.66);
-                        ctx.strokeRect(-p.size / 2, -p.size / 3, p.size, p.size * 0.66);
-                    }
+                    ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
                     ctx.restore();
                 }
             });
 
-            if (alive > 0 && elapsed < 3600) {
+            if (alive > 0 && elapsed < 3000) {
                 requestAnimationFrame(frame);
             } else {
                 window.removeEventListener('resize', resize);
@@ -241,7 +158,7 @@
         requestAnimationFrame(frame);
     }
 
-    /* 6. Keyboard shortcuts in Ventanilla */
+    /* 4. Keyboard shortcuts in Ventanilla */
     function initVentanillaShortcuts() {
         const shell = document.querySelector('.ventanilla-shell');
         if (!shell) return;
@@ -289,12 +206,12 @@
         });
     }
 
-    /* 7. Staggered reveal index assignment */
+    /* 5. Staggered reveal index assignment */
     function initStagger() {
-        const groups = document.querySelectorAll('.levels-grid, .guide-grid, .choice-grid, .inspector-fields');
+        const groups = document.querySelectorAll('.levels-portal-grid, .guide-grid, .choice-steel-grid');
         groups.forEach((group) => {
             Array.from(group.children).forEach((child, idx) => {
-                child.style.setProperty('--stagger', `${idx * 55}ms`);
+                child.style.setProperty('--stagger', `${idx * 45}ms`);
             });
         });
     }
@@ -303,8 +220,6 @@
         initStagger();
         initAuthTabs();
         initCounters();
-        initTiltCards();
-        initRipplesAndSparks();
         initConfetti();
         initVentanillaShortcuts();
     });

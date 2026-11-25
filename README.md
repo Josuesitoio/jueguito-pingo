@@ -1,8 +1,8 @@
 # Ventanilla Exprés
 
-> **Simulador cívico interactivo** en PHP para dominar el uso y la validación de los cinco documentos oficiales más comunes en México (**CURP**, **NSS**, **Acta de Nacimiento**, **Recibo de CFE** y **Correo Electrónico**).
+> **Simulador cívico interactivo** en PHP para dominar el uso y la validación de los cinco documentos oficiales más comunes en México (**CURP**, **NSS**, **Acta de Nacimiento**, **Recibo de CFE** y **Correo Electrónico**), desarrollado para el módulo **PAEC: IMPULSO 64 PERFIL NAVOJOA CONECTA 2.0**.
 
-**Stack:** `PHP 8+ (strict_types)` · `JSON + flock` · `HTML5` · `CSS3 (Neo-Pop)` · `JavaScript Vanilla (ES6+)` · Sin base de datos ni frameworks externos.
+**Stack:** `PHP 8+ (strict_types)` · `JSON + flock` · `HTML5` · `CSS3 (Portal Institucional)` · `JavaScript Vanilla (ES6+)` · Sin base de datos ni frameworks externos.
 
 ---
 
@@ -34,7 +34,7 @@ El jugador asume el rol de operador de ventanilla a través de **5 niveles (25 c
 - **Puntaje:** `40 pts` por acierto → máximo `200 pts` por nivel y **`1,000 pts` globales**.
 - **Desbloqueo:** Se requieren al menos **3/5 aciertos (`120 pts`)** para aprobar y habilitar el siguiente nivel.
 - **Anti-farming:** Rejugar un nivel solo suma al marcador global la diferencia sobre tu récord anterior (`max(0, puntajeJornada - recordAnterior)`).
-- **Rango Máximo:** Al alcanzar `1,000 / 1,000 pts` se obtiene la insignia **★ Jefe de Ventanilla**.
+- **Rango Máximo:** Al alcanzar `1,000 / 1,000 pts` se obtiene el rango **Jefe de Ventanilla**.
 - **Atajos de teclado en Ventanilla:** `1`–`5` (elegir documento), `A` (aprobar), `R` (rechazar), `Enter` (siguiente caso / ver resumen).
 
 ---
@@ -46,13 +46,13 @@ La aplicación sigue una arquitectura **MPA (Multi-Page Application) orientada a
 ```mermaid
 flowchart TB
     subgraph Cliente["Capa de Presentación (Navegador)"]
-        UI["HTML5 + CSS3 Neo-Pop (base.css)"]
+        UI["HTML5 + CSS3 Portal Institucional (base.css)"]
         JS["FrontendUI (assets/js/app.js)"]
     end
 
     subgraph Vistas["Controladores de Vista (PHP)"]
         IDX["index.php (Acceso)"]
-        ESC["escritorio.php (Niveles)"]
+        ESC["escritorio.php (Inicio / Niveles)"]
         VEN["ventanilla.php (Juego PRG)"]
         RES["resumen.php (Resultados)"]
         GUI["guia.php (Manual)"]
@@ -92,13 +92,13 @@ flowchart TB
 1. **Patrón PRG (Post/Redirect/Get):** Todas las acciones que mutan estado (`login`, `registro`, `responder`, `siguiente`) procesan el `POST` y redirigen inmediatamente con `302 Location`. Esto elimina envíos duplicados al refrescar el navegador (`F5`).
 2. **Persistencia JSON con Bloqueo Atómico (`flock`):** En lugar de requerir un motor SQL, `storage.php` usa bloqueos compartidos (`LOCK_SH`) para leer y bloqueos exclusivos (`LOCK_EX` + `ftruncate` + `fflush`) dentro de un callback transaccional (`actualizar_usuarios`), con soporte de cancelación segura (`_abortar`) y normalización automática de invariantes (`0..200` por nivel, tope `1000` global).
 3. **Estado en Sesión e Idempotencia:** La partida activa vive en `$_SESSION['partida']` (bajo la cookie `VENTANILLA_EXPRES_SESS` con `session_regenerate_id(true)`). Esto permite consultar la `guia.php` en medio de un turno sin perder progreso y garantiza mediante la bandera `guardada` que `finalizar_y_guardar_jornada()` no duplique puntos si el usuario recarga `resumen.php`.
-4. **Progressive Enhancement:** Toda la jugabilidad funciona únicamente con formularios HTML y PHP; `assets/js/app.js` añade micro-interacciones no bloqueantes (atajos, tilt 3D, confeti en `<canvas>`, contadores) respetando `prefers-reduced-motion`.
+4. **Progressive Enhancement:** Toda la jugabilidad funciona únicamente con formularios HTML y PHP; `assets/js/app.js` añade micro-interacciones no bloqueantes (atajos de teclado, pestañas deslizantes, confeti en `<canvas>`, contadores animados y aparición escalonada) respetando `prefers-reduced-motion`.
 5. **Seguridad:** Escape XSS sistemático con `h()`, validación server-side de niveles desbloqueados y respuestas permitidas, y sanitización de nombres de íconos SVG. *(Nota: al ser un simulador local/educativo sin entorno productivo, las contraseñas en `data/usuarios.json` se comparan en texto plano; para producción bastaría sustituir por `password_hash` / `password_verify` en `auth.php`).*
 
 ### Decisiones de Diseño Visual (UI/UX)
-- **Estética Maximalista Neo-Pop Cívico Mexicano (`assets/css/base.css`):** Combina un lienzo crema cálido (`#FFF3D1`) con textura *halftone*, bordes de tinta gruesos (`3px solid #111111`), sombras duras desplazadas estilo cómic y sellos rotatorios de oficina (`★ ¡ACIERTO! ★` / `✕ ¡ERROR! ✕`).
-- **Codificación Cromática por Documento:** Cada documento tiene su color e ícono SVG exclusivo para reforzar el aprendizaje visual: **CURP** (esmeralda `#00B86B`), **NSS** (cobalto `#1E40FF`), **Acta** (naranja `#FF5C1B`), **CFE** (dorado `#FFC700`) y **Correo** (violeta `#7C3AED`).
-- **Jerarquía Tipográfica Tripartita:** `Bricolage Grotesque` para titulares expresivos, `Inter` para lectura clara y `Space Mono` (con `tabular-nums`) para folios, claves CURP, NSS y métricas.
+- **Estética de Portal Institucional (`assets/css/base.css` — Navy · Steel · Cream):** Combina una cabecera institucional fija en azul marino (`#15284B`), paneles contenedores en crema cálido (`#F4EEE0`) sobre lienzo limpio (`#F8F9FB`), tarjetas interactivas en azul acero (`#2F5D80`) y hojas de expediente blancas (`#FFFFFF`) con bordes suaves y sombras sutiles.
+- **Dock Flotante Inferior (`floating-dock`):** Barra de navegación contextual fija en la parte inferior para usuarios autenticados (`Inicio`, `Trámites`, `Guía`, `Salir`), manteniendo accesible la guía rápida incluso en medio de una jornada.
+- **Jerarquía Tipográfica Tripartita:** `Plus Jakarta Sans` para titulares y banners institucionales, `Inter` para lectura de interfaz y `JetBrains Mono` (con `tabular-nums`) para folios, claves CURP, NSS, fechas y métricas.
 
 ---
 
@@ -201,6 +201,7 @@ classDiagram
         +int puntos_anadidos
         +int puntos_totales_globales
         +int nivel_desbloqueado_nuevo
+        +int nivel_desbloqueado_actual
         +bool primera_vez_perfecta
     }
 
@@ -251,8 +252,6 @@ classDiagram
     class FrontendUI {
         <<module>>
         +initCounters() void
-        +initTiltCards() void
-        +initRipplesAndSparks() void
         +initAuthTabs() void
         +initConfetti() void
         +initVentanillaShortcuts() void
@@ -299,15 +298,15 @@ classDiagram
 | **`Storage`** | `includes/storage.php` | Capa de acceso a datos y utilidades base: lectura/escritura atómica con `flock` sobre `usuarios.json`, caché estática en memoria para `casos.json` e íconos SVG (`icono()`), normalización de usuarios, escape HTML (`h()`), catálogo de documentos y traductor de etiquetas de campos. |
 | **`Auth`** | `includes/auth.php` | Gestiona el ciclo de vida de la sesión (`VENTANILLA_EXPRES_SESS`), registro con validación de unicidad y longitud (`2–24` caracteres), login, cierre seguro de cookies, guards de ruta (`requerir_sesion`, `redirigir_si_autenticado`) y mensajería flash de un solo uso. |
 | **`Engine`** | `includes/engine.php` | Núcleo de reglas de negocio: inicializa partidas, valida y evalúa respuestas tanto de elección como de inspección, controla rachas, transiciona fases y persiste de forma idempotente el progreso, récords y desbloqueos al finalizar los 5 casos. |
-| **`HeaderLayout`** | `includes/header.php` | Renderiza el layout común (`render_header` / `render_footer`): cabecera HTML, escenario visual neo-pop de fondo, marquesina en login o barra superior con barra de progreso global, insignia de rango y navegación contextual. |
-| **`FrontendUI`** | `assets/js/app.js` | IIFE en JavaScript vanilla que orquesta las micro-interacciones: contadores animados con easing cúbico, efecto tilt 3D en tarjetas, ripples y chispas en botones, pestañas animadas de acceso, motor de confeti en `<canvas>`, atajos de teclado y animaciones escalonadas (`--stagger`). |
+| **`HeaderLayout`** | `includes/header.php` | Renderiza el layout común (`render_header` / `render_footer`): cabecera HTML, encabezado institucional (`portal-header`) con barra de progreso global y chip del operador, y el dock flotante inferior (`floating-dock`) para navegar entre `Inicio`, `Trámites`, `Guía` y `Salir`. |
+| **`FrontendUI`** | `assets/js/app.js` | IIFE en JavaScript vanilla que orquesta las micro-interacciones: contadores animados con easing cúbico (`initCounters`), pestañas deslizantes de acceso (`initAuthTabs`), motor de confeti en `<canvas>` (`initConfetti`), atajos de teclado (`initVentanillaShortcuts`) y animaciones escalonadas (`initStagger` con `--stagger`). |
 
 ### 3. Controladores de Vista (Raíz)
 | Archivo | Responsabilidad |
 | :--- | :--- |
-| **`index.php`** | Portada de acceso con vitrina visual de documentos y formulario con pestañas para **Iniciar sesión** y **Crear cuenta**. |
-| **`escritorio.php`** | Tablero principal del operador: resumen de progreso global, niveles aprobados/perfectos y tarjetas de los 5 niveles con su estado (`Disponible`, `Completado`, `★ Perfecto`, `Bloqueado`). |
-| **`ventanilla.php`** | Controlador PRG de la jornada activa: valida `?nivel=X`, procesa respuestas y avance de casos, y renderiza la interfaz de elección, el expediente en modo inspector y el panel de feedback con sello. |
+| **`index.php`** | Portada institucional con banner de bienvenida, vitrina de los 5 trámites incluidos en tarjetas azul acero y formulario con pestañas para **Iniciar sesión** y **Crear cuenta**. |
+| **`escritorio.php`** | Tablero principal del operador (`Inicio`): resumen de progreso global, niveles aprobados/perfectos y tarjetas azul acero de los 5 niveles con su estado (`Disponible`, `Completado`, `Perfecto · 5/5`, `Bloqueado`). |
+| **`ventanilla.php`** | Controlador PRG de la jornada activa: valida `?nivel=X`, procesa respuestas y avance de casos, y renderiza la solicitud o expediente en hoja blanca (`white-sheet`), tarjetas de elección (`choice-steel-grid`) o botones de inspección y panel de feedback. |
 | **`resumen.php`** | Pantalla de cierre de jornada con métricas comparativas (puntaje actual vs. récord previo), alertas de desbloqueo/rango, confeti al aprobar y acciones para avanzar o reintentar. |
 | **`guia.php`** | Manual rápido con las 5 fichas de documentos oficiales; permite regresar directamente a la ventanilla sin perder la partida activa. |
 | **`logout.php`** | Destruye la sesión y la cookie activa, y redirige a `index.php`. |
@@ -331,7 +330,7 @@ stateDiagram-v2
 
     Completada --> Resumen : Redirect a resumen.php
     Resumen --> Decision : Siguiente nivel o Reintentar
-    Resumen --> Escritorio : Volver al escritorio
+    Resumen --> Escritorio : Volver al inicio
 ```
 
 ---
@@ -340,7 +339,7 @@ stateDiagram-v2
 
 ```text
 Jueguito-Pingo/
-├── index.php              # Acceso (Login / Registro)
+├── index.php              # Acceso (Login / Registro) y portada institucional
 ├── escritorio.php         # Dashboard de niveles y estadísticas globales
 ├── ventanilla.php         # Pantalla principal de juego (Elección / Inspector / Feedback)
 ├── resumen.php            # Resumen de jornada y actualización de récords
@@ -350,14 +349,14 @@ Jueguito-Pingo/
 │   ├── storage.php        # Persistencia JSON con flock, normalización, catálogo y helpers
 │   ├── auth.php           # Sesiones, autenticación, registro y mensajes flash
 │   ├── engine.php         # Motor de juego, evaluación de casos y progresión
-│   └── header.php         # Layout compartido (topbar, fondo neo-pop y footer)
+│   └── header.php         # Layout compartido (header institucional, dock flotante y footer)
 ├── data/
 │   ├── casos.json         # Banco de 5 niveles y 25 casos (elección e inspección)
 │   └── usuarios.json      # Registro persistente de usuarios y récords
 └── assets/
-    ├── css/base.css       # Sistema de diseño Maximalista Neo-Pop Cívico
-    ├── js/app.js          # Micro-interacciones, confeti Canvas y atajos de teclado
-    └── icons/*.svg        # 13 íconos vectoriales embebidos en línea
+    ├── css/base.css       # Sistema de diseño Portal Institucional (Navy · Steel · Cream)
+    ├── js/app.js          # Contadores, pestañas de acceso, confeti Canvas y atajos
+    └── icons/*.svg        # 14 íconos vectoriales embebidos en línea
 ```
 
 ---

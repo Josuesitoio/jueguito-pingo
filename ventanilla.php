@@ -92,50 +92,47 @@ render_header('Ventanilla · Nivel ' . $nivelId, $usuario, 'ventanilla');
 ?>
 
 <section class="ventanilla-shell">
-    <!-- 1. Cabecera maximalista de progreso -->
-    <header class="ventanilla-header card">
-        <div class="ventanilla-progress-row">
-            <div class="ventanilla-meta">
-                <span class="level-num-tag tabular-nums">NIVEL 0<?= $nivelId ?> · <?= h(mb_strtoupper((string) $nivel['nombre'], 'UTF-8')) ?></span>
-                <div class="ventanilla-case-counter tabular-nums">
-                    <span>CASO 0<?= $numeroCaso ?> / 05</span>
-                    <?php if ((int) $partida['racha_actual'] > 0): ?>
-                        <span class="streak-pill anim-pop">★ RACHA x<?= (int) $partida['racha_actual'] ?></span>
-                    <?php endif; ?>
+    <!-- Panel crema principal de ventanilla -->
+    <div class="cream-panel ventanilla-panel">
+        <!-- 1. Cabecera de progreso -->
+        <header class="ventanilla-header">
+            <div class="ventanilla-progress-row">
+                <div>
+                    <span class="meta-label tabular-nums">Nivel 0<?= $nivelId ?> · <?= h((string) $nivel['nombre']) ?></span>
+                    <div class="ventanilla-case-counter tabular-nums">
+                        <h2>Caso 0<?= $numeroCaso ?> de 05</h2>
+                        <?php if ((int) $partida['racha_actual'] > 0): ?>
+                            <span class="streak-pill anim-pop">Racha <?= (int) $partida['racha_actual'] ?></span>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
+                <div class="ventanilla-score-live tabular-nums">
+                    <span>Aciertos</span>
+                    <strong><?= (int) $partida['aciertos'] ?> / 5</strong>
                 </div>
             </div>
 
-            <div class="ventanilla-score-live tabular-nums">
-                <span class="meta-label">ACIERTOS</span>
-                <strong><?= (int) $partida['aciertos'] ?> / 5</strong>
+            <div class="progress-track" role="progressbar" aria-valuenow="<?= $numeroCaso ?>" aria-valuemin="1" aria-valuemax="5">
+                <div class="progress-fill" style="width: <?= $porcentajeJornada ?>%;"></div>
             </div>
-        </div>
+        </header>
 
-        <div class="progress-track progress-track-ventanilla" role="progressbar" aria-valuenow="<?= $numeroCaso ?>" aria-valuemin="1" aria-valuemax="5">
-            <div class="progress-fill progress-fill-animated" style="width: <?= $porcentajeJornada ?>%;"></div>
-        </div>
-    </header>
-
-    <?php if ($flash !== null): ?>
-        <div class="alert alert-<?= h($flash['tipo']) ?> anim-shake" role="alert">
-            <?= h($flash['mensaje']) ?>
-        </div>
-    <?php endif; ?>
-
-    <!-- 2. Área del caso o expediente -->
-    <?php if ($tipoCaso === 'eleccion'): ?>
-        <article class="card document-card case-request-card<?= $fase === 'decision' ? ' anim-paper-in' : '' ?>">
-            <div class="dossier-tab-strip">
-                <span>EXPEDIENTE // FOLIO <?= h((string) $caso['id']) ?></span>
-                <span class="mode-tag">ENTREGA DE DOCUMENTO</span>
+        <?php if ($flash !== null): ?>
+            <div class="alert alert-<?= h($flash['tipo']) ?> anim-shake" role="alert">
+                <?= h($flash['mensaje']) ?>
             </div>
+        <?php endif; ?>
 
-            <div class="document-card-content">
-                <div class="document-card-head">
+        <!-- 2. Área del caso o expediente -->
+        <?php if ($tipoCaso === 'eleccion'): ?>
+            <article class="white-sheet<?= $fase === 'decision' ? ' anim-fade-up' : '' ?>">
+                <div class="sheet-top-bar">
                     <div>
-                        <p class="meta-label">SOLICITANTE EN VENTANILLA</p>
-                        <h2><?= h((string) ($caso['ciudadano'] ?? 'Solicitante en ventanilla')) ?></h2>
+                        <span class="meta-label">Solicitud en ventanilla · Folio <?= h((string) $caso['id']) ?></span>
+                        <h3><?= h((string) ($caso['ciudadano'] ?? 'Solicitante en ventanilla')) ?></h3>
                     </div>
+                    <span class="mode-tag">Elección de documento</span>
                 </div>
 
                 <hr class="divider">
@@ -143,152 +140,137 @@ render_header('Ventanilla · Nivel ' . $nivelId, $usuario, 'ventanilla');
                 <div class="case-request-body">
                     <p class="case-quote">“<?= h((string) $caso['solicitud']) ?>”</p>
                     <p class="case-instruction">
-                        Elige el documento oficial exacto para despachar este trámite.
+                        Selecciona el documento oficial correspondiente para atender este trámite.
                     </p>
                 </div>
-            </div>
-        </article>
-    <?php else: ?>
-        <?php
-            $docKey = (string) ($caso['documento'] ?? 'curp');
-            $docInfo = $documentos[$docKey] ?? $documentos['curp'];
-            $campos = (array) ($caso['campos'] ?? []);
-        ?>
-        <article class="card document-card inspector-sheet <?= h($docInfo['clase']) ?><?= $fase === 'decision' ? ' anim-paper-in' : '' ?>">
-            <div class="dossier-tab-strip dossier-tab-doc">
-                <span>INSPECCIÓN // FOLIO <?= h((string) $caso['id']) ?></span>
-                <span class="mode-tag">MODO INSPECTOR</span>
-            </div>
-
-            <div class="document-card-content">
-                <div class="document-card-head">
+            </article>
+        <?php else: ?>
+            <?php
+                $docKey = (string) ($caso['documento'] ?? 'curp');
+                $docInfo = $documentos[$docKey] ?? $documentos['curp'];
+                $campos = (array) ($caso['campos'] ?? []);
+            ?>
+            <article class="white-sheet inspector-sheet<?= $fase === 'decision' ? ' anim-fade-up' : '' ?>">
+                <div class="sheet-top-bar">
                     <div class="inspector-doc-title">
-                        <span class="doc-icon-wrap">
+                        <span class="doc-icon-badge">
                             <?= icono($docInfo['icono'], 'icon') ?>
                         </span>
                         <div>
-                            <p class="meta-label">DOCUMENTO PRESENTADO</p>
-                            <h2><?= h($docInfo['nombre_completo']) ?></h2>
+                            <span class="meta-label">Revisión documental · Folio <?= h((string) $caso['id']) ?></span>
+                            <h3><?= h($docInfo['nombre_completo']) ?></h3>
                         </div>
                     </div>
-                    <div class="barcode-deco" aria-hidden="true"></div>
+                    <span class="mode-tag">Modo Inspector</span>
                 </div>
 
                 <hr class="divider">
 
                 <div class="inspector-context">
-                    <span class="meta-label">CONTEXTO DEL TRÁMITE</span>
+                    <span class="meta-label">Contexto del trámite</span>
                     <p><?= h((string) ($caso['contexto'] ?? '')) ?></p>
                 </div>
 
                 <dl class="inspector-fields">
                     <?php foreach ($campos as $claveCampo => $valorCampo): ?>
                         <div class="inspector-field">
-                            <dt class="meta-label">
-                                <?= h(mb_strtoupper(etiqueta_campo_documento((string) $claveCampo), 'UTF-8')) ?>
-                            </dt>
+                            <dt class="meta-label"><?= h(etiqueta_campo_documento((string) $claveCampo)) ?></dt>
                             <dd class="mono-data"><?= h((string) $valorCampo) ?></dd>
                         </div>
                     <?php endforeach; ?>
                 </dl>
-            </div>
-        </article>
-    <?php endif; ?>
+            </article>
+        <?php endif; ?>
 
-    <!-- 3. Zona de decisión o Retroalimentación -->
-    <?php if ($fase === 'decision'): ?>
-        <div class="decision-zone">
-            <?php if ($tipoCaso === 'eleccion'): ?>
-                <form method="post" action="ventanilla.php" class="choice-grid">
-                    <input type="hidden" name="accion" value="responder">
-                    <?php
-                        $orden = ['curp', 'nss', 'acta', 'cfe', 'correo'];
-                        foreach ($orden as $pos => $docId):
-                            $doc = $documentos[$docId];
-                    ?>
-                        <button
-                            type="submit"
-                            name="respuesta"
-                            value="<?= h($docId) ?>"
-                            class="choice-card <?= h($doc['clase']) ?> choice-pos-<?= $pos + 1 ?>"
-                        >
-                            <span class="choice-card-head">
-                                <span class="doc-icon-wrap">
-                                    <?= icono($doc['icono'], 'icon') ?>
+        <!-- 3. Zona de decisión (Tarjetas azul acero como en la imagen) o Retroalimentación -->
+        <?php if ($fase === 'decision'): ?>
+            <div class="decision-zone">
+                <?php if ($tipoCaso === 'eleccion'): ?>
+                    <form method="post" action="ventanilla.php" class="choice-steel-grid">
+                        <input type="hidden" name="accion" value="responder">
+                        <?php
+                            $orden = ['acta', 'curp', 'nss', 'cfe', 'correo'];
+                            foreach ($orden as $pos => $docId):
+                                $doc = $documentos[$docId];
+                        ?>
+                            <button
+                                type="submit"
+                                name="respuesta"
+                                value="<?= h($docId) ?>"
+                                class="choice-card choice-pos-<?= $pos + 1 ?><?= $pos === 4 ? ' choice-card-wide' : '' ?>"
+                            >
+                                <span class="choice-card-top">
+                                    <span class="choice-card-icon">
+                                        <?= icono($doc['icono'], 'icon') ?>
+                                    </span>
+                                    <kbd class="kbd-hint"><?= $pos + 1 ?></kbd>
                                 </span>
                                 <span class="choice-card-title"><?= h($doc['nombre']) ?></span>
-                                <kbd class="kbd-hint">0<?= $pos + 1 ?></kbd>
-                            </span>
-                            <span class="choice-card-desc"><?= h($doc['resumen']) ?></span>
+                                <span class="choice-card-desc"><?= h($doc['resumen']) ?></span>
+                            </button>
+                        <?php endforeach; ?>
+                    </form>
+                <?php else: ?>
+                    <form method="post" action="ventanilla.php" class="inspector-actions">
+                        <input type="hidden" name="accion" value="responder">
+                        <button type="submit" name="respuesta" value="rechazar" class="btn btn-reject btn-lg">
+                            <?= icono('x', 'icon') ?>
+                            <span>Rechazar</span>
+                            <kbd class="kbd-hint kbd-hint-outline">R</kbd>
                         </button>
-                    <?php endforeach; ?>
-                </form>
-            <?php else: ?>
-                <form method="post" action="ventanilla.php" class="inspector-actions">
-                    <input type="hidden" name="accion" value="responder">
-                    <button type="submit" name="respuesta" value="rechazar" class="btn btn-reject btn-lg">
-                        <?= icono('x', 'icon') ?>
-                        <span>RECHAZAR</span>
-                        <kbd class="kbd-hint kbd-hint-outline">R</kbd>
-                    </button>
-                    <button type="submit" name="respuesta" value="aprobar" class="btn btn-approve btn-lg btn-sheen">
-                        <?= icono('check', 'icon') ?>
-                        <span>APROBAR</span>
-                        <kbd class="kbd-hint kbd-hint-invert">A</kbd>
-                    </button>
-                </form>
-            <?php endif; ?>
-        </div>
-    <?php elseif ($fase === 'feedback' && is_array($ultimo)): ?>
-        <?php
-            $esCorrecta = !empty($ultimo['es_correcta']);
-            $respuestaCorrectaTexto = '';
-            if (($ultimo['tipo'] ?? '') === 'eleccion') {
-                $docCorr = $documentos[(string) ($ultimo['respuesta_correcta'] ?? '')] ?? null;
-                $respuestaCorrectaTexto = $docCorr ? $docCorr['nombre'] : '';
-            } else {
-                $respuestaCorrectaTexto = (($ultimo['respuesta_correcta'] ?? '') === 'aprobar') ? 'Aprobar' : 'Rechazar';
-            }
-        ?>
-        <section class="feedback-panel <?= $esCorrecta ? 'feedback-success anim-feedback-ok' : 'feedback-error anim-shake' ?>" aria-live="polite">
-            <div class="stamp-seal <?= $esCorrecta ? 'stamp-seal-ok' : 'stamp-seal-err' ?>" aria-hidden="true">
-                <?= $esCorrecta ? '★ ¡ACIERTO! ★' : '✕ ¡ERROR! ✕' ?>
+                        <button type="submit" name="respuesta" value="aprobar" class="btn btn-approve btn-lg">
+                            <?= icono('check', 'icon') ?>
+                            <span>Aprobar</span>
+                            <kbd class="kbd-hint kbd-hint-invert">A</kbd>
+                        </button>
+                    </form>
+                <?php endif; ?>
             </div>
-
-            <div class="feedback-head">
-                <div class="feedback-title">
-                    <?= icono($esCorrecta ? 'check' : 'x', 'icon') ?>
-                    <div>
-                        <p class="meta-label"><?= $esCorrecta ? 'RESOLUCIÓN CORRECTA' : 'RESOLUCIÓN INCORRECTA' ?></p>
-                        <h2>
-                            <?php if ($esCorrecta): ?>
-                                ¡Trámite sellado con éxito!
-                            <?php else: ?>
-                                Respuesta esperada: <?= h($respuestaCorrectaTexto) ?>
-                            <?php endif; ?>
-                        </h2>
+        <?php elseif ($fase === 'feedback' && is_array($ultimo)): ?>
+            <?php
+                $esCorrecta = !empty($ultimo['es_correcta']);
+                $respuestaCorrectaTexto = '';
+                if (($ultimo['tipo'] ?? '') === 'eleccion') {
+                    $docCorr = $documentos[(string) ($ultimo['respuesta_correcta'] ?? '')] ?? null;
+                    $respuestaCorrectaTexto = $docCorr ? $docCorr['nombre'] : '';
+                } else {
+                    $respuestaCorrectaTexto = (($ultimo['respuesta_correcta'] ?? '') === 'aprobar') ? 'Aprobar' : 'Rechazar';
+                }
+            ?>
+            <section class="feedback-panel <?= $esCorrecta ? 'feedback-success anim-fade-up' : 'feedback-error anim-shake' ?>" aria-live="polite">
+                <div class="feedback-head">
+                    <div class="feedback-title">
+                        <?= icono($esCorrecta ? 'check' : 'x', 'icon') ?>
+                        <div>
+                            <span class="meta-label"><?= $esCorrecta ? 'Resolución correcta' : 'Resolución incorrecta' ?></span>
+                            <h3>
+                                <?php if ($esCorrecta): ?>
+                                    Trámite atendido correctamente
+                                <?php else: ?>
+                                    Respuesta esperada: <?= h($respuestaCorrectaTexto) ?>
+                                <?php endif; ?>
+                            </h3>
+                        </div>
                     </div>
+
+                    <span class="reward-chip tabular-nums">+<?= (int) ($ultimo['puntos_caso'] ?? 0) ?> pts</span>
                 </div>
 
-                <div class="feedback-rewards tabular-nums">
-                    <span class="reward-chip anim-pop">+<?= (int) ($ultimo['puntos_caso'] ?? 0) ?> PTS</span>
+                <p class="feedback-explanation"><?= h((string) ($ultimo['explicacion'] ?? '')) ?></p>
+
+                <div class="feedback-actions">
+                    <form method="post" action="ventanilla.php" class="feedback-next-form">
+                        <input type="hidden" name="accion" value="siguiente">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <span><?= $numeroCaso < 5 ? 'Siguiente caso' : 'Ver resumen de jornada' ?></span>
+                            <?= icono('arrow-right', 'icon') ?>
+                            <kbd class="kbd-hint kbd-hint-invert">Enter</kbd>
+                        </button>
+                    </form>
                 </div>
-            </div>
-
-            <p class="feedback-explanation"><?= h((string) ($ultimo['explicacion'] ?? '')) ?></p>
-
-            <div class="feedback-actions">
-                <form method="post" action="ventanilla.php" class="feedback-next-form">
-                    <input type="hidden" name="accion" value="siguiente">
-                    <button type="submit" class="btn btn-primary btn-lg btn-sheen">
-                        <span><?= $numeroCaso < 5 ? 'Siguiente caso' : 'Ver resumen de jornada' ?></span>
-                        <?= icono('arrow-right', 'icon') ?>
-                        <kbd class="kbd-hint kbd-hint-invert">Enter</kbd>
-                    </button>
-                </form>
-            </div>
-        </section>
-    <?php endif; ?>
+            </section>
+        <?php endif; ?>
+    </div>
 </section>
 
 <?php render_footer(); ?>

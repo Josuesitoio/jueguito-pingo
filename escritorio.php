@@ -20,131 +20,132 @@ foreach ($records as $pts) {
     }
 }
 
-render_header('Escritorio', $usuario, 'escritorio');
+render_header('Inicio', $usuario, 'escritorio');
 ?>
 
-<section class="page-section">
-    <div class="page-header page-header-banner">
-        <div>
-            <p class="meta-label header-pill">★ ESCRITORIO DE OPERACIONES ★</p>
-            <h1>Niveles de <span class="text-highlight-gold">Ventanilla</span></h1>
-            <p class="page-subtitle">
-                Atiende 5 casos por jornada. Consigue al menos 3 aciertos (120 / 200 pts) para desbloquear el siguiente nivel.
-            </p>
-        </div>
+<section class="portal-page">
+    <!-- Banner institucional de bienvenida y resumen -->
+    <div class="portal-hero-banner portal-hero-compact anim-fade-up">
+        <div class="portal-hero-row">
+            <div>
+                <span class="portal-hero-badge"><?= $esJefe ? 'Rango Máximo · Jefe de Ventanilla' : 'Operador en turno' ?></span>
+                <h1>Bienvenido, <?= h((string) $usuario['usuario']) ?></h1>
+                <p>
+                    Completa las jornadas de 5 casos con al menos 3 aciertos (120 pts) para desbloquear cada nuevo nivel.
+                </p>
+            </div>
 
-        <?php if ($esJefe): ?>
-            <div class="rank-banner anim-pop" role="status">
-                <?= icono('sello', 'icon') ?>
-                <div>
-                    <p class="meta-label">★ RANGO MÁXIMO ALCANZADO</p>
-                    <strong>Jefe de Ventanilla (1000 / 1000 pts)</strong>
+            <div class="portal-hero-stats tabular-nums">
+                <div class="hero-stat-pill">
+                    <strong data-count-to="<?= (int) $usuario['puntos_totales'] ?>"><?= (int) $usuario['puntos_totales'] ?></strong>
+                    <span>de 1,000 pts</span>
+                </div>
+                <div class="hero-stat-pill">
+                    <strong data-count-to="<?= $nivelesCompletados ?>" data-suffix=" / 5"><?= $nivelesCompletados ?> / 5</strong>
+                    <span>Aprobados</span>
+                </div>
+                <div class="hero-stat-pill">
+                    <strong data-count-to="<?= count($perfectos) ?>" data-suffix=" / 5"><?= count($perfectos) ?> / 5</strong>
+                    <span>Perfectos</span>
                 </div>
             </div>
-        <?php endif; ?>
+        </div>
     </div>
 
     <?php if ($flash !== null): ?>
-        <div class="alert alert-<?= h($flash['tipo']) ?> anim-pop" role="status">
+        <div class="alert alert-<?= h($flash['tipo']) ?> anim-fade-up" role="status">
             <?= h($flash['mensaje']) ?>
         </div>
     <?php endif; ?>
 
-    <!-- Tablero maximalista de métricas por bloques de color -->
-    <div class="stats-overview-grid">
-        <div class="card stat-tile stat-tile-cobalt anim-slide-up">
-            <span class="meta-label">PROGRESO GLOBAL</span>
-            <strong class="stat-tile-value tabular-nums" data-count-to="<?= (int) $usuario['puntos_totales'] ?>" data-suffix=" / 1000"><?= (int) $usuario['puntos_totales'] ?> / 1000</strong>
-            <div class="progress-track progress-track-invert">
-                <div class="progress-fill progress-fill-gold" style="width: <?= min(100, (int) round(((int) $usuario['puntos_totales'] / 1000) * 100)) ?>%;"></div>
-            </div>
+    <!-- Panel crema principal inspirado directamente en la sección "Trámites" de la referencia -->
+    <section class="cream-panel anim-fade-up" style="animation-delay: 70ms;">
+        <div class="section-heading">
+            <h2>Trámites y Niveles</h2>
+            <p>Jornadas disponibles para atender en ventanilla</p>
         </div>
 
-        <div class="card stat-tile stat-tile-gold anim-slide-up" style="animation-delay: 60ms;">
-            <span class="meta-label">NIVELES APROBADOS</span>
-            <strong class="stat-tile-value tabular-nums" data-count-to="<?= $nivelesCompletados ?>" data-suffix=" / 5"><?= $nivelesCompletados ?> / 5</strong>
-            <span class="stat-tile-sub">★ <?= count($perfectos) ?> jornadas perfectas (5/5)</span>
-        </div>
+        <div class="levels-portal-grid">
+            <?php foreach ($niveles as $nivel): ?>
+                <?php
+                    $id = (int) $nivel['id'];
+                    $record = (int) ($records[(string) $id] ?? 0);
+                    $estaDesbloqueado = ($id <= $nivelDesbloqueado);
+                    $estaCompletado = ($record >= 120);
+                    $esPerfecto = in_array($id, $perfectos, true);
+                    $porcNivel = min(100, (int) round(($record / 200) * 100));
 
-        <div class="card stat-tile stat-tile-pink anim-slide-up" style="animation-delay: 120ms;">
-            <span class="meta-label">NIVEL DESBLOQUEADO</span>
-            <strong class="stat-tile-value tabular-nums" data-count-to="<?= $nivelDesbloqueado ?>" data-prefix="NIVEL 0" data-suffix=" / 05">NIVEL 0<?= $nivelDesbloqueado ?> / 05</strong>
-            <span class="stat-tile-sub"><?= $esJefe ? '★ Rango: Jefe de Ventanilla' : 'Meta final: 1,000 puntos' ?></span>
-        </div>
-    </div>
+                    if (!$estaDesbloqueado) {
+                        $estadoTexto = 'Bloqueado';
+                        $estadoClase = 'pill-locked';
+                    } elseif ($estaCompletado) {
+                        $estadoTexto = $esPerfecto ? 'Perfecto · 5/5' : 'Completado';
+                        $estadoClase = 'pill-completed';
+                    } else {
+                        $estadoTexto = 'Disponible';
+                        $estadoClase = 'pill-available';
+                    }
+                ?>
+                <?php if ($estaDesbloqueado): ?>
+                    <a href="ventanilla.php?nivel=<?= $id ?>" class="steel-level-card">
+                        <div class="steel-card-top">
+                            <span class="steel-level-num tabular-nums">Nivel 0<?= $id ?></span>
+                            <span class="steel-status-pill <?= $estadoClase ?>">
+                                <?php if ($estaCompletado): ?>
+                                    <?= icono('check', 'icon icon-xs') ?>
+                                <?php endif; ?>
+                                <span><?= h($estadoTexto) ?></span>
+                            </span>
+                        </div>
 
-    <div class="levels-grid">
-        <?php foreach ($niveles as $nivel): ?>
-            <?php
-                $id = (int) $nivel['id'];
-                $record = (int) ($records[(string) $id] ?? 0);
-                $estaDesbloqueado = ($id <= $nivelDesbloqueado);
-                $estaCompletado = ($record >= 120);
-                $esPerfecto = in_array($id, $perfectos, true);
+                        <div class="steel-card-body">
+                            <h3><?= h((string) $nivel['nombre']) ?></h3>
+                            <p><?= h((string) $nivel['descripcion']) ?></p>
+                        </div>
 
-                if (!$estaDesbloqueado) {
-                    $estadoTexto = 'Bloqueado';
-                    $estadoClase = 'status-locked';
-                } elseif ($estaCompletado) {
-                    $estadoTexto = $esPerfecto ? '★ Perfecto · 5/5' : 'Completado';
-                    $estadoClase = 'status-completed';
-                } else {
-                    $estadoTexto = 'Disponible';
-                    $estadoClase = 'status-available';
-                }
-            ?>
-            <article class="card level-card level-accent-<?= $id ?><?= !$estaDesbloqueado ? ' level-card-locked' : '' ?>">
-                <div class="level-card-ribbon">
-                    <span class="level-num-tag tabular-nums">NIVEL 0<?= $id ?></span>
-                    <span class="status-badge <?= $estadoClase ?>">
-                        <?php if (!$estaDesbloqueado): ?>
-                            <?= icono('lock', 'icon icon-sm') ?>
-                        <?php elseif ($estaCompletado): ?>
-                            <?= icono('check', 'icon icon-sm') ?>
-                        <?php endif; ?>
-                        <span><?= h($estadoTexto) ?></span>
-                    </span>
-                </div>
+                        <div class="steel-card-footer">
+                            <div class="steel-record-wrap">
+                                <div class="steel-record-row tabular-nums">
+                                    <span><?= h((string) ($nivel['mecanica'] ?? '5 casos')) ?></span>
+                                    <strong><?= $record ?> / 200 pts</strong>
+                                </div>
+                                <div class="progress-track progress-track-steel">
+                                    <div class="progress-fill progress-fill-light" style="width: <?= $porcNivel ?>%;"></div>
+                                </div>
+                            </div>
+                            <span class="steel-cta-arrow" aria-hidden="true">
+                                <?= icono('arrow-right', 'icon') ?>
+                            </span>
+                        </div>
+                    </a>
+                <?php else: ?>
+                    <div class="steel-level-card is-locked" aria-disabled="true">
+                        <div class="steel-card-top">
+                            <span class="steel-level-num tabular-nums">Nivel 0<?= $id ?></span>
+                            <span class="steel-status-pill pill-locked">
+                                <?= icono('lock', 'icon icon-xs') ?>
+                                <span>Bloqueado</span>
+                            </span>
+                        </div>
 
-                <div class="level-card-body">
-                    <h2><?= h((string) $nivel['nombre']) ?></h2>
-                    <p class="level-description"><?= h((string) $nivel['descripcion']) ?></p>
+                        <div class="steel-card-body">
+                            <h3><?= h((string) $nivel['nombre']) ?></h3>
+                            <p><?= h((string) $nivel['descripcion']) ?></p>
+                        </div>
 
-                    <div class="level-meta-row">
-                        <span class="meta-chip"><?= h((string) ($nivel['mecanica'] ?? '5 casos')) ?></span>
-                        <span class="meta-chip meta-chip-pop tabular-nums">40 PTS / ACIERTO · 200 MÁX</span>
-                    </div>
-                </div>
-
-                <div class="level-card-footer">
-                    <div class="level-record">
-                        <span class="meta-label">RÉCORD DEL NIVEL</span>
-                        <span class="record-value tabular-nums"><?= $record ?> / 200 pts</span>
-                        <div class="progress-track progress-track-sm">
-                            <div class="progress-fill progress-fill-animated" style="width: <?= min(100, (int) round(($record / 200) * 100)) ?>%;"></div>
+                        <div class="steel-card-footer">
+                            <div class="steel-record-wrap">
+                                <div class="steel-record-row tabular-nums">
+                                    <span><?= h((string) ($nivel['mecanica'] ?? '5 casos')) ?></span>
+                                    <strong>Requiere nivel anterior</strong>
+                                </div>
+                            </div>
                         </div>
                     </div>
-
-                    <div class="level-action">
-                        <?php if ($estaDesbloqueado): ?>
-                            <a
-                                href="ventanilla.php?nivel=<?= $id ?>"
-                                class="btn <?= $estaCompletado ? 'btn-secondary' : 'btn-primary btn-sheen' ?>"
-                            >
-                                <span><?= $estaCompletado ? 'Rejugar nivel' : 'Atender ventanilla' ?></span>
-                                <?= icono('arrow-right', 'icon') ?>
-                            </a>
-                        <?php else: ?>
-                            <button type="button" class="btn btn-disabled" disabled>
-                                <?= icono('lock', 'icon') ?>
-                                <span>Bloqueado</span>
-                            </button>
-                        <?php endif; ?>
-                    </div>
-                </div>
-            </article>
-        <?php endforeach; ?>
-    </div>
+                <?php endif; ?>
+            <?php endforeach; ?>
+        </div>
+    </section>
 </section>
 
 <?php render_footer(); ?>
